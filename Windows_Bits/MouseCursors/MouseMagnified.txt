@@ -1,0 +1,25 @@
+RegtoText Windows Registry Conversion Version 5.00
+
+[HKEY_CURRENT_USER\Control Panel\Cursors]
+"AppStarting"=[REG_EXPAND_SZ] %SystemRoot%\cursors\lappstrt.cur 
+"Arrow"=[REG_EXPAND_SZ] %SystemRoot%\cursors\larrow.cur 
+"ContactVisualization"=[REG_DWORD] 1
+"Crosshair"=[REG_EXPAND_SZ] %SystemRoot%\cursors\lcross.cur 
+"GestureVisualization"=[REG_DWORD] 31
+"Hand"=[REG_EXPAND_SZ]  
+"Help"=[REG_EXPAND_SZ]  
+"IBeam"=[REG_EXPAND_SZ] %SystemRoot%\cursors\libeam.cur 
+"No"=[REG_EXPAND_SZ] %SystemRoot%\cursors\lnodrop.cur 
+"NWPen"=[REG_EXPAND_SZ]  
+"Scheme Source"=[REG_DWORD] 2
+"SizeAll"=[REG_EXPAND_SZ] %SystemRoot%\cursors\lmove.cur 
+"SizeNESW"=[REG_EXPAND_SZ] %SystemRoot%\cursors\lnesw.cur 
+"SizeNS"=[REG_EXPAND_SZ] %SystemRoot%\cursors\lns.cur 
+"SizeNWSE"=[REG_EXPAND_SZ] %SystemRoot%\cursors\lnwse.cur 
+"SizeWE"=[REG_EXPAND_SZ] %SystemRoot%\cursors\lwe.cur 
+"UpArrow"=[REG_EXPAND_SZ]  
+"Wait"=[REG_EXPAND_SZ] %SystemRoot%\cursors\lwait.cur 
+""="Magnified"
+"Pin"=[REG_EXPAND_SZ] %SystemRoot%\cursors\lpin.cur 
+"Person"=[REG_EXPAND_SZ] %SystemRoot%\cursors\lperson.cur 
+

@@ -1,0 +1,22 @@
+"AppStarting","%SystemRoot%\cursors\aero_working_xl.ani"
+"Arrow","%SystemRoot%\cursors\aero_arrow_xl.cur"
+"ContactVisualization"=1
+"Crosshair",""
+"GestureVisualization",31
+"Hand","%SystemRoot%\cursors\aero_link_xl.cur"
+"Help","%SystemRoot%\cursors\aero_helpsel_xl.cur" 
+"IBeam",""
+"No","%SystemRoot%\cursors\aero_unavail_xl.cur"
+"NWPen","%SystemRoot%\cursors\aero_pen_xl.cur"
+"Scheme Source",2
+"SizeAll","%SystemRoot%\cursors\aero_move_xl.cur"
+"SizeNESW","%SystemRoot%\cursors\aero_nesw_xl.cur" 
+"SizeNS","%SystemRoot%\cursors\aero_ns_xl.cur"
+"SizeNWSE","%SystemRoot%\cursors\aero_nwse_xl.cur" 
+"SizeWE","%SystemRoot%\cursors\aero_ew_xl.cur"
+"UpArrow","%SystemRoot%\cursors\aero_up_xl.cur" 
+"Wait","%SystemRoot%\cursors\aero_busy_xl.ani"
+"","Windows Default (extra large)"
+"Pin","%SystemRoot%\cursors\aero_pin_xl.cur" 
+"Person","%SystemRoot%\cursors\aero_person_xl.cur"
+

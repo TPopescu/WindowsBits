@@ -1,0 +1,25 @@
+RegtoText Windows Registry Conversion Version 5.00
+
+[HKEY_CURRENT_USER\Control Panel\Cursors]
+"AppStarting"=[REG_EXPAND_SZ] %SystemRoot%\cursors\wait_im.cur 
+"Arrow"=[REG_EXPAND_SZ] %SystemRoot%\cursors\arrow_im.cur 
+"ContactVisualization"=[REG_DWORD] 1
+"Crosshair"=[REG_EXPAND_SZ] %SystemRoot%\cursors\cross_im.cur 
+"GestureVisualization"=[REG_DWORD] 31
+"Hand"=[REG_EXPAND_SZ] %SystemRoot%\cursors\aero_link_im.cur 
+"Help"=[REG_EXPAND_SZ] %SystemRoot%\cursors\help_im.cur 
+"IBeam"=[REG_EXPAND_SZ] %SystemRoot%\cursors\beam_im.cur 
+"No"=[REG_EXPAND_SZ] %SystemRoot%\cursors\no_im.cur 
+"NWPen"=[REG_EXPAND_SZ] %SystemRoot%\cursors\pen_im.cur 
+"Scheme Source"=[REG_DWORD] 2
+"SizeAll"=[REG_EXPAND_SZ] %SystemRoot%\cursors\move_im.cur 
+"SizeNESW"=[REG_EXPAND_SZ] %SystemRoot%\cursors\size1_im.cur 
+"SizeNS"=[REG_EXPAND_SZ] %SystemRoot%\cursors\size4_im.cur 
+"SizeNWSE"=[REG_EXPAND_SZ] %SystemRoot%\cursors\size2_im.cur 
+"SizeWE"=[REG_EXPAND_SZ] %SystemRoot%\cursors\size3_im.cur 
+"UpArrow"=[REG_EXPAND_SZ] %SystemRoot%\cursors\up_im.cur 
+"Wait"=[REG_EXPAND_SZ] %SystemRoot%\cursors\busy_im.cur 
+""="Windows Inverted (large)"
+"Pin"=[REG_EXPAND_SZ] %SystemRoot%\cursors\pin_im.cur 
+"Person"=[REG_EXPAND_SZ] %SystemRoot%\cursors\person_im.cur 
+
