@@ -1,5 +1,19 @@
-﻿#---------Module Use --------------------------
+﻿function get-cloudisticsApiModuleCodeVersion{
+return '0.9.1.3'
+}
+#---------Module Use --------------------------
 function import-cldtxmodule{
+<#
+.Synopsis
+function to import a module
+.Description 
+Function that attempts importing a module (default module name: CloudisticsAPIModule) 
+first from c:\Windows\System32\WindowsModules\v1.0\Modules, 
+then from c:\programData\Cloudistics\SscriptData. 
+If the module is not found, a GUI Dialog opens up allowing the user to select the 
+location of the folder. Both the desired location of the module and its name
+can be passed as parameters.
+#>
 param(
 $commonrootpath="$($env:Programdata)\Cloudistics\ScriptData",
 $modulename = 'cloudisticsapimodule'
@@ -52,6 +66,32 @@ return (get-module $modulename)
 
 #---------REST API----------------
 function submit-cldtxrestcall{
+<#
+.Synopsis
+REST CALL primitive. Used by other functions
+
+.Description
+Function that attempts performing a REST CALL against the Cloudistics Engine. I is used in conjunction with other functions that process the parameters necessary to execute a successful REST CALL
+Whenever possible, acceptable values are shown in validation lists.
+
+.PARAMETER startindex
+start-index=[positive integer] Defaults to 0
+
+.PARAMETER limitcount
+limit-count=[positive integer] Defaults to 1000
+
+.PARAMETER datacenters
+datacenters=[comma-delimited list of datacenter UUIDs]
+
+.PARAMETER applicationgroups
+application-groups  =[comma-delimited list of application group UUIDs]
+
+.PARAMETER starttime
+start‑timestamp ='yyyy-MM-dd'T'HH:mm:ss' i.e '2017-01-12'T'12:00:00'
+
+.PARAMETER endtime
+end‑timestamp ='yyyy-MM-dd'T'HH:mm:ss' i.e '2017-01-12'T'12:00:00'
+#>
 param (
 [Parameter(Mandatory=$true)][ValidateSet('virtual-lab','prod','portal-rclab','beta')]$portal, 
 [Parameter(Mandatory=$true)]$APIToken,
@@ -149,6 +189,22 @@ return $response
 
 }
 function submit-vmaction{
+<#
+.Synopsis
+Basic actions pertaining to VMs
+
+.Description
+Performs the following operations (presented as a validation list) pertaining to VMs:
+start VM
+stop VM 
+shutdown VM 
+restart VM 
+force-restart VM 
+suspend VM 
+resume VM 
+delete VM
+
+#>
 param (
 [Parameter(Mandatory=$true)][ValidateSet('start','stop','shutdown','restart','force-restart','suspend','resume','delete')]$action,
 [Parameter(Mandatory=$true)]$machineUUID,
@@ -166,6 +222,31 @@ return $response
 
 }
 function get-resources{
+<#
+.Synopsis
+Retrieves organization resources and details for a specific resource identified by UUID
+
+.Description
+Retrieves the information regarding the following resources (presented as a validation list):
+ applications
+ application-groups 
+ tags
+ categories 
+ datacenters 
+ migration-zones 
+ vlans 
+ vnets 
+ flash-pools 
+ templates 
+ locations 
+ compute-nodes 
+ storage-blocks 
+ storage-controllers
+ allocations
+When using the uuid parameter to point to a specific resource, the detailed info of that resource is retrieved.
+
+
+#>
 param(
 [Parameter(Mandatory=$true)][ValidateSet('applications','application-groups','tags','categories','datacenters','migration-zones','vlans','vnets','flash-pools','templates','locations','compute-nodes','storage-blocks','storage-controllers','allocations')]$resource,
 [Parameter(Mandatory=$true)][ValidateSet('virtual-lab','prod','portal-rclab')]$portal, 
@@ -179,6 +260,22 @@ return $response
 
 }
 function submit-snapshotaction{
+<#
+.Synopsis
+perform snapshot operations
+
+.Description
+Allows managing snapshots for a VM. The following actions, presented as a validation list, are available:
+getSnapshots 
+getSnapshotInfo 
+createSnapshot
+deleteSnapshot
+renameSnapshot
+
+When a snapshot UUID is provided as a parameter, the delete and rename snapshot actions can be performed.
+
+
+#>
 param(
 [Parameter(Mandatory=$true)]$machineUuid,
 [Parameter(Mandatory=$true)][ValidateSet('virtual-lab','prod','portal-rclab')]$portal, 
@@ -214,6 +311,17 @@ return $response
 #return $snapargs
 }
 function wait-tocomplete{
+<#
+,Synopsis
+Reports when a Cloudistics job previously triggered is completed
+
+.Description
+Since some REST operations are executed asynchronously it is important to know when the execution is 
+actually finished. The Wait-tocomplete function takes the operation UUID as an argument and returns
+the exit status when the operation finishes. 
+
+When the showprogress switch is added, a simple text based progress bar is shown.
+#>
 param(
 [Parameter(Mandatory=$true)]$actionUuid,
 [Parameter(Mandatory=$true)][ValidateSet('virtual-lab','prod','portal-rclab')]$portal, 
@@ -234,6 +342,24 @@ if($showprogress.IsPresent){write-Host "."}
 return $response.status
 }
 function submit-diskaction{
+<#
+.Synopsis
+Executes disk virtual related operations
+
+.Description
+Allows managing the virtual disks on a VM (machineUUID param). The following operations are available via a validation list:
+addDisk 
+deleteDisk 
+renameDisk 
+resizeDisk 
+cloneAndAttachDisk 
+getDiskStats
+
+For some operations (deleteDisk, resize disk, cloneAndAttachDisk,getDiskStats), the diskUUID parameter is needed.
+
+Additionally, if a disk size is needed for an operation,  the diskSize parameter needs to be used. The diskSize can be expressed in Bytes or in PowerShell Size convention (i.e. 10GB, 10MB etc)
+
+#>
 param(
 [Parameter(Mandatory=$true)][ValidateSet('addDisk','deleteDisk','renameDisk','resizeDisk','cloneAndAttachDisk','getDiskStats')]$action,
 [Parameter(Mandatory=$true)]$machineUUID,
@@ -242,8 +368,6 @@ param(
 [Parameter(Mandatory=$false)]$diskSize,
 [Parameter(Mandatory=$true)][ValidateSet('virtual-lab','prod','portal-rclab')]$portal, 
 [Parameter(Mandatory=$true)]$apitoken
-
-
 )
 
 
@@ -298,6 +422,29 @@ return $result
 }
 #--------------Not Properly Tested -------------
 function submit-vnicaction{
+<#
+.Synopsis
+Manage vNics on a VM
+
+.Description
+Allows managing the virtual network adapters of a VM (parameter machineUUID). The following operations are supported:
+renameVnic 
+editVnicNetworkingType 
+editVnicFirewall 
+editVnicMAC 
+addVnic 
+removeVnic
+
+VNIC uuids can be retrieved using the get-resources function as they are a part of a VM info.
+For specific actions, additional specific parameters may be needed. These are:
+networkUUID
+vnicType
+vnicMac
+vnicName 
+firewallOverrideUuid
+
+
+#>
   param(
     [Parameter(Mandatory=$true)][ValidateSet('renameVnic','editVnicNetworkingType','editVnicFirewall','editVnicMAC','addVnic','removeVnic')]$action,
     [Parameter(Mandatory=$true)]$machineUUID,
@@ -363,6 +510,44 @@ function submit-vnicaction{
 
 }
 function edit-machineproperties{
+<#
+.Synopsis
+Allows editing VM properties; it includes editing some properties that were included in other functions on this module
+
+.Description
+Allows managing the properties of a VM (parameter machineUUID). The following operations, provided via a validation list, are supported:
+description 
+datacenter 
+migrationZone 
+bootorder 
+vCpus 
+memory 
+computeTags 
+computeCategory 
+vNicName 
+vNicNetworkingType 
+vNicFireWall 
+vNicMacAddress 
+diskName 
+diskSize 
+applicationVirtualizationSettings 
+automaticRecoverySettings 
+applicationVMMode
+
+Some similar operations (i.e. vnic or vdisk related) may be executed via less complex functions (submit-diskaction, submit-vnicaction). However, they have been included in this function for human logic reasons.
+
+Some of the operations unique to this function are:
+Boot order setting (parameter bootOrderObject, bootOrderJson)
+Memory size (parameter memory)
+Compute Category (parameter computeCategoryUuid)
+Application Virtualization Settings (parameter pplicationVirtualizationSettings)
+Automatic Recovery Settings (parameter automaticRecoverySettings )
+Application VM Mode (parameter applicationVMMode)
+VM Description (no new parameter needed)
+Data Center (no new parameter needed)
+MigrationZone (parameter migrationZoneUuid)
+
+#>
 param (
 [Parameter(Mandatory=$true)][ValidateSet('description','datacenter','migrationZone','bootorder','vCpus','memory','computeTags','computeCategory','vNicName','vNicNetworkingType','vNicFireWall','vNicMacAddress','diskName','diskSize','applicationVirtualizationSettings','automaticRecoverySettings','applicationVMMode')]$property,
 [Parameter(Mandatory=$true)]$machineUUID,
@@ -430,6 +615,15 @@ return $result
 
 #-------New API Token or Mail Settings File-----
 function new-apitokenfile{
+<#
+.Synopsis
+Creates a Json Organization Configuration file
+
+.Description
+Run without parameters to create (via a GUI element) a json file containing the organization configuration necessary for the Cloudistics REST API Calls and saving it to the desired location.
+Use the parameters to create the same file programmatically.
+
+#>
 param (
 [Parameter(Mandatory=$false)]$filelocation = $null,
 [Parameter(Mandatory=$false)][ValidateSet('virtual-lab','prod','portal-rclab','beta')]$portal,
@@ -497,7 +691,7 @@ $window = Convert-XAMLtoWindow -XAML $xaml
 #region Define Event Handlers
 $window.add_Loaded(
 {
-$cmbindex = $window.ComboPortal.Items.Name.indexof($stackparams.portal)
+$cmbindex = $window.ComboPortal.Items.Name.indexof($stackparams.portal.Replace('-',$null))
 $window.ComboPortal.SelectedIndex = $cmbindex
 $window.TxtOrg.Text = $stackparams.organization
 $window.TxtApiToken.Text = $stackparams.apitoken
@@ -545,6 +739,30 @@ else
 #endregion Process results
 }
 function new-mailinfo{
+<#
+.Synopsis
+Configure e-mail settings to send a Cloudistics related file
+
+.Description
+Run without parameters to create (via a GUI) element a json file containing the configuration 
+necessary to sending a file via e-mail to the desired recipient and saving it to the desired location.
+Separate multiple recipients via comas.
+Use the parameters to create the same file programmatically.
+IMPORTANT: the 'get-key' function in the CloudisticsPowerShellModule module is needed for password encryption.
+File:
+{
+    "mailfrom":  "<user@domain.com>",
+    "mailto":  "<user@domain.com>",
+    "smtpserver":  "<smtp.maildomain.com>",
+    "smtpport":  "<smtpport>",
+    "enableSSL":  "<yes/no>",
+    "usecredentials":  "<yes/no>",
+    "smtpusername":  "<user@domain.com>",
+    "smtppassword":  "<encryptedSmtpPassword>",
+    "location":  "<location>"
+}
+
+#>
 param (
 [Parameter(Mandatory=$false)]$mailfolderlocation=$null,
 [Parameter(Mandatory=$false)]$organization=$null,
@@ -1151,6 +1369,22 @@ else
 
 #-------Process API Token or Mail config File---
 function get-apitoken {
+<#
+.Synopsis
+Retrieves API info
+
+.Description
+Retrieves the API configuration information from a json config file
+File Example
+ {
+"portal":"<portal name>",
+"organization":"<Stack Name (optional)>",
+"apitoken":"<api token>",
+"location": "<location>"
+}
+Note: 'The location' value is generated automatically and may or may not be updated based on programmatic needs.
+
+#>
 param (
 $filelocation = $null
 )
@@ -1165,6 +1399,7 @@ File Example
 if([string]::IsNullOrEmpty($filelocation)){$filelocation = get-filename}
 if($filelocation){
 $stackparams = Get-Content -Raw -Path $filelocation -ErrorAction SilentlyContinue | ConvertFrom-Json
+$stackparams.location = $filelocation
 return $stackparams
 }
 return $null
@@ -1222,6 +1457,28 @@ Write-Host "Done!"
 #$message
 }
 function send-mail{
+<#
+.Synopsis
+Sends file to recipients via e-mail
+
+.Description
+Creates a mail object and performs a send operation based on the settings in the 'mailfile' parameter. 
+IMPORTANT: the 'get-key' function in the module is needed for password encryption.
+The 'key' parameter is deprecated.
+File Example:
+{
+    "mailfrom":  "<user@domain.com>",
+    "mailto":  "<user@domain.com>",
+    "smtpserver":  "<smtp.maildomain.com>",
+    "smtpport":  "<smtpport>",
+    "enableSSL":  "<yes/no>",
+    "usecredentials":  "<yes/no>",
+    "smtpusername":  "<user@domain.com>",
+    "smtppassword":  "<encryptedSmtpPassword>",
+    "location":  "<location>"
+}
+
+#>
 param(
 [Parameter(Mandatory=$false)]$mailfolderlocation = "$($env:ProgramData)\Cloudistics\ScriptData",
 [Parameter(Mandatory=$false)]$organization=$null,
@@ -1296,6 +1553,16 @@ if(!($testresult)){return $zinfo}
 Write-Host "`nNo API Token Present. Exiting..." -ForegroundColor Yellow; exit
 }
 function get-cldtxJsonInfo{
+<#
+.Synopsis
+identify the json file config content
+
+.Description
+Identifies if a json file is either an api token configuration or a mail configuration file.
+The parameter propertylist contains the list of property in the json object.
+Note: when assessing a file, this function goes to 0 depth
+
+#>
 param(
 $commonrootpath="$($env:Programdata)\Cloudistics\ScriptData",
 $apitokenfilename = $null,
@@ -1336,7 +1603,7 @@ Write-Host "`nAttempting to find the $filedescription file manually" -Foreground
 $zinfo = get-apitoken;
 if($zinfo){$testresult = Compare-Object -ReferenceObject ($propertylist | sort-object) -DifferenceObject ((($zinfo | get-member ) | Where-Object -FilterScript {$_.membertype -eq 'NoteProperty'}).Name | sort-object)
 if(!($testresult)){
-if($zinfo.location -ne $jsonfile){$zinfo.location=$jsonfile}
+#if($zinfo.location -ne $jsonfile){$zinfo.location=$jsonfile}
 return $zinfo} 
 }
 Write-Host "`nNo API Token Present. Exiting..." -ForegroundColor Yellow; exit
@@ -1345,6 +1612,10 @@ Write-Host "`nNo API Token Present. Exiting..." -ForegroundColor Yellow; exit
 
 #-------- GUI AUX ------------------------------
 function get-fileName {
+<#
+.Synopsis
+Gets or sets (parameter savefile) file path using a GUI element (Windows default)
+#>
 param ($initialDirectory = (Get-Location),[switch]$savefile,$titleroot='Cloudistics Portal and API Key',$filterroot="JsonFiles (*.json)| *.json")
 
  $checkAssembly = ([System.AppDomain]::CurrentDomain.GetAssemblies() | Where-Object -FilterScript {$_.location -like "*System.Windows.Forms*"}).Location
@@ -1363,6 +1634,10 @@ param ($initialDirectory = (Get-Location),[switch]$savefile,$titleroot='Cloudist
  return $FileDialog.filename
 }
 function get-folderName{
+<#
+.Synopsis
+Allows selecting a folder (where to save files) using a dialog similar with the Windows one (as opposed to Windows FolderBrowserDialog dialog)
+#>
 param(
 $initialdirectory = (Get-Location),$title = 'Select Folder'
 )
@@ -1374,7 +1649,15 @@ if($folderdialog.ShowDialog([System.IntPtr]::Zero)){return $folderdialog.FileNam
 return $null
 }
 function set-message{
-#do set-message .... | Out-Null if no output is needed, otherwise it will be returned in addition to the function using it :)
+<#
+.synopsis
+display message GUI element
+
+.Description
+Allows displaying a message (and make yes/no/cancel decisions) using Windows messageBox and customizing it via validation lists as needed
+
+Note: do set-message .... | Out-Null if no output is needed, otherwise it will be returned in addition to the function using it :)
+#>
 param(
 [Parameter(Mandatory=$true)]
 $message,
@@ -1390,11 +1673,13 @@ Load-Assembly -Assemblyname "System.Windows.Forms"|out-null
 return [System.Windows.Forms.MessageBox]::Show($message,$title,$buttons,$icon,$defaultButton)
 }
 function Show-WPFWindow {
+<#
+.Synopsis
+Allows displaying a window containing a XAML GUI element
+#>
   param
   (
-    [Parameter(Mandatory=$true)]
-    [Windows.Window]
-    $Window
+    [Parameter(Mandatory=$true)][Windows.Window]$Window
   )
   
   $result = $null
@@ -1405,11 +1690,13 @@ function Show-WPFWindow {
   $result
 }
 function Convert-XAMLtoWindow {
+<#
+.Synopsis
+Converts a XAML here string to a window object
+#>
   param
   (
-    [Parameter(Mandatory=$true)]
-    [string]
-    $XAML
+    [Parameter(Mandatory=$true)][string]$XAML
   )
   
   Add-Type -AssemblyName PresentationFramework
@@ -1429,31 +1716,43 @@ function Convert-XAMLtoWindow {
   $result
 }
 function Load-Assembly {
+<#
+.Synopsis
+Avoids loading the same assembly multiple times
+
+.Description
+Check if an Assembly is loaded (and load it if it is missing)
+The report switch results in displaying a message re the assembly status. The assembly is still loaded if not present already.
+#>
      [CmdletBinding()]
      param(
           [Parameter(Mandatory = $true,ValueFromPipeline = $true)][ValidateNotNullOrEmpty()][String]$AssemblyName,
           [Switch]$Report = $false
      )
 
-     if(([appdomain]::currentdomain.getassemblies() | Where {$_ -match $AssemblyName}) -eq $null)
-     {
+     if(([appdomain]::currentdomain.getassemblies() | Where {$_ -match $AssemblyName}) -eq $null){
           if($Report) {Write-Output "Loading $AssemblyName assembly.";}
           [Void] [System.Reflection.Assembly]::LoadWithPartialName($AssemblyName);
           return 1
      }
-     else
-     {
+     else {
           if($Report) {Write-Output "$AssemblyName is already loaded.";}
           return -1
      }
 }
 function get-powershellversion {
+<#
+.Synopsis
+Gets powershell version and displays a message. Exists script if major version is lower than 3
+#>
 Write-Host "`nChecking PowerShell... " -NoNewline
+$pvs = ($PSVersionTable).psversion.Major
+$pvsfull = ($PSVersionTable).psversion.tostring()
 $color=$null
 Switch ($pvs){
-{$_ -ge 5} {$addon = 'is supported!'; $color='Green'}
-{$_ -in (3..4)} {$addon = 'not supported but worth a try!';$color = 'Yellow'}
-{$_ -lt 3} {$addon = 'is not supported'; $color='Red'}
+{$_ -ge 5} {$addon = 'is supported!'; $color='Green';break}
+{$_ -in (3..4)} {$addon = 'not supported but worth a try!';$color = 'Yellow';break}
+{$_ -lt 3} {$addon = 'is not supported'; $color='Red';break}
 }
 
 Write-Host "Powershell version $pvsfull $addon " -ForegroundColor $color
@@ -1465,6 +1764,24 @@ else {return $null}
 
 #---------Security------------------------------
 function set-encodeEncrypt{
+<#
+.Synopsis
+encode, decode, encrypt and decrypt strings and secure string objects
+
+.Description
+Allows clear text and secure string manipulation by
+Encoding to base64, 
+Decoding from base64, 
+Encrypting with a key, 
+decrypting with a key 
+decrypting with a key from secure strings converted to text
+
+Useful for e-mail passwords.
+NOTE: Windows does not allow encrypting and decrypting secure strings on different machines or even for different users on the same machine without a key, thus making keyless encryption impractical for scheduled tasks portability or even scheduled tasks in general. To avoid confusions, the keyless encryption options have been removed. 
+Additionally the key parameter is deprecated for security reasons. 
+It is recommended setting up the encryption key inside the get-key function in the Cloudistics Powershell module
+
+#>
 param(
 [Parameter(ValueFromPipeline=$true,Mandatory=$true,Position=1)]$processString,
 [Parameter(Mandatory=$true,Position=0)][ValidateSet('Encode','Decode','Encrypt','DecryptFromPlainText','Decrypt')]$action,
@@ -1476,7 +1793,7 @@ if($action -eq 'Encode'){return [convert]::ToBase64String([Text.Encoding]::UNICO
 if($action -eq 'Decode'){return [System.Text.Encoding]::UNICODE.GetString([System.Convert]::FromBase64String($mailparams.smtppassword))}
 
 if($action -eq 'Encrypt'){
-return $processString | ConvertTo-SecureString -AsPlainText -Force | ConvertFrom-SecureString @zparam 
+return $processString | ConvertTo-SecureString -AsPlainText -Force | ConvertFrom-SecureString -Key (get-key)
 }
 
 $tempstring=$null
@@ -1494,9 +1811,15 @@ return $decryptedstring
 
 }
 function use-runAs {    
+<#
+.Synpsis
+Check if script is running as Adminstrator and if not use RunAs. Use Check Switch to check if admin
 
-    # Check if script is running as Adminstrator and if not use RunAs 
-    # Use Check Switch to check if admin     
+.Description
+Check if the parent script runs in elevated mode (using the 'check' switch). If it does not, it attempts restarting the script in elevated mode. 
+Note: This works well for scripts without arguments. Still working to include the command line parameters when restarting the script in elevated mode
+
+#>
     param([Switch]$Check) 
      if(Test-Path variable:global:psISE){return}
 
@@ -1514,6 +1837,18 @@ function use-runAs {
     }else {Write-Warning "Error - Script must be saved as a .ps1 file first";break;}  
 } 
 function convert-textToSecureString {
+<#
+.Synopsis
+The function receives a plain text string and converts it to a secure string (for the session duration)
+
+.Description
+Converts a plain text string into a memory residing secure string that can be used, for instance, to create a credentials object. 
+
+.Example
+PS C:\>'password' | convert-textToSecureString
+System.Security.SecureString
+
+#>
 param([Parameter(ValueFromPipeline=$true,Mandatory=$true,Position=0)][string]$plainText)
 $securestring = new-object System.Security.SecureString
 $chars = $plainText.toCharArray()
@@ -1521,6 +1856,23 @@ foreach ($char in $chars) {$secureString.AppendChar($char)}
 return $securestring
 }
 function get-key{
+<#
+.Synopsis
+converts a string into an encruption key
+
+.Description
+Converts a string into an encryption key, considering the following hash types (provided as a validation list):
+MD5
+SHA 
+SHA1 
+SHA256 
+SHA512
+The default algorithm is MD5
+
+.Example
+PS c:\> 'password' | get-key -hashtype SHA
+
+#>
 param (
 [Parameter(ValueFromPipeline=$true,Mandatory=$false,Position=1)]$inputstring='Cloudistics',
 [Parameter(ValueFromPipeline=$false,Mandatory=$false,Position=0)][ValidateSet('MD5','SHA','SHA1','SHA256','SHA512')]$hashtype='MD5'
@@ -1531,6 +1883,23 @@ return [System.Security.Cryptography.HashAlgorithm]::Create($hashtype).ComputeHa
 
 #--------AUX-----------------------------------
 function resize-image {
+<#
+.Synopsis
+Resize image and convert to the desired format
+
+.Description
+Resizes and saves an image in the desired format for future use.
+The default Quality parameter is set to 90 (meaning 90%)
+The imgformat parameter is an aggregated value, represented in a string of the following format: WxHx<imgtype>, i.e. 120x80xpng
+<imgtype> is one of the following:
+BMP              
+JPEG             
+GIF              
+TIFF             
+PNG 
+Note: This function will be enhanced in the future by adding GUI elements
+
+#>
     param([String]$ImagePath, [String]$OutputLocation, [Int]$Quality = 90, [String]$imgformat)
  #note: Image Format = WxHximgtype i.e. 132x32xpng
     #Add-Type -AssemblyName "System.Drawing"
@@ -1578,7 +1947,7 @@ $process.WaitForExit()
 $result.exitcode = $process.ExitCode
 return $result
 }
-function Write-HostColored() {
+function write-hostColored() {
     [CmdletBinding()]
     param(
         [parameter(Position=0, ValueFromPipeline=$true)]
@@ -1712,8 +2081,8 @@ return [pscustomobject]@{result = $result;'body'=$zbody}
 # SIG # Begin signature block
 # MIID5wYJKoZIhvcNAQcCoIID2DCCA9QCAQExCzAJBgUrDgMCGgUAMGkGCisGAQQB
 # gjcCAQSgWzBZMDQGCisGAQQBgjcCAR4wJgIDAQAABBAfzDtgWUsITrck0sYpfvNR
-# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQU0buZPSr+km0wEQCXAtzCYKYR
-# SQ2gggIDMIIB/zCCAWigAwIBAgIQZXsLzuTF+b1PPg61Cp25RzANBgkqhkiG9w0B
+# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQUxNWV3Jr+LDv/5/QZi20Wwij1
+# AACgggIDMIIB/zCCAWigAwIBAgIQZXsLzuTF+b1PPg61Cp25RzANBgkqhkiG9w0B
 # AQUFADAaMRgwFgYDVQQDDA9UdWRvciBTIFBvcGVzY3UwHhcNMTkwMTAyMjA0NDQ2
 # WhcNMjMwMTAyMDAwMDAwWjAaMRgwFgYDVQQDDA9UdWRvciBTIFBvcGVzY3UwgZ8w
 # DQYJKoZIhvcNAQEBBQADgY0AMIGJAoGBALjpypo1UQY105CGk5zvG9HSc43PhQc7
@@ -1727,8 +2096,8 @@ return [pscustomobject]@{result = $result;'body'=$zbody}
 # SgIBATAuMBoxGDAWBgNVBAMMD1R1ZG9yIFMgUG9wZXNjdQIQZXsLzuTF+b1PPg61
 # Cp25RzAJBgUrDgMCGgUAoHgwGAYKKwYBBAGCNwIBDDEKMAigAoAAoQKAADAZBgkq
 # hkiG9w0BCQMxDAYKKwYBBAGCNwIBBDAcBgorBgEEAYI3AgELMQ4wDAYKKwYBBAGC
-# NwIBFTAjBgkqhkiG9w0BCQQxFgQUaakdbM3qW7i5063yvDWoIRDKer4wDQYJKoZI
-# hvcNAQEBBQAEgYBOsQa/FoI+41v8c1rtCy3dbWgzJJiEIhLu1EvVXF1HKDpKd+Li
-# aLu51Q2+w7LG827RWR+pM/nh0Qat0VN1JXIFbDvtQiH5g+lNPnaHzMe4EJc5SghZ
-# 4pPKru91oNb2gmNPGeEmQcAd8X+TVZzYlHJ6ZkzXE0XE+D95vOkMC+Ugxg==
+# NwIBFTAjBgkqhkiG9w0BCQQxFgQU/r+M48vPlEXUfA0hjGBrfWUapyAwDQYJKoZI
+# hvcNAQEBBQAEgYCvOpcmixVlLOeZ1EAM4g6A5y/JfdrYYUQj1r8wFrFDTLHIb1iA
+# 0iRB0xbgZpow3udzURW6mevpGmzob1WEliq5vk19UGckevNefj9kKwXHDNDFXAKy
+# wHS0tZeQofIP1N4IU1LUctn1XENENtMmWuy3P/4Ru5qdVfQNjQjfuZcPOw==
 # SIG # End signature block
