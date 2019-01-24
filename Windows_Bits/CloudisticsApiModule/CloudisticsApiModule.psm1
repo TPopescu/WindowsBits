@@ -1,5 +1,5 @@
 ﻿function get-cloudisticsApiModuleCodeVersion{
-return '0.9.1.3'
+return '10.0.0.1'
 }
 #---------Module Use --------------------------
 function import-cldtxmodule{
@@ -2081,8 +2081,8 @@ return [pscustomobject]@{result = $result;'body'=$zbody}
 # SIG # Begin signature block
 # MIID5wYJKoZIhvcNAQcCoIID2DCCA9QCAQExCzAJBgUrDgMCGgUAMGkGCisGAQQB
 # gjcCAQSgWzBZMDQGCisGAQQBgjcCAR4wJgIDAQAABBAfzDtgWUsITrck0sYpfvNR
-# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQUxNWV3Jr+LDv/5/QZi20Wwij1
-# AACgggIDMIIB/zCCAWigAwIBAgIQZXsLzuTF+b1PPg61Cp25RzANBgkqhkiG9w0B
+# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQU1k4XwD0YCcuZM8ierPpPXoXC
+# SFGgggIDMIIB/zCCAWigAwIBAgIQZXsLzuTF+b1PPg61Cp25RzANBgkqhkiG9w0B
 # AQUFADAaMRgwFgYDVQQDDA9UdWRvciBTIFBvcGVzY3UwHhcNMTkwMTAyMjA0NDQ2
 # WhcNMjMwMTAyMDAwMDAwWjAaMRgwFgYDVQQDDA9UdWRvciBTIFBvcGVzY3UwgZ8w
 # DQYJKoZIhvcNAQEBBQADgY0AMIGJAoGBALjpypo1UQY105CGk5zvG9HSc43PhQc7
@@ -2096,8 +2096,8 @@ return [pscustomobject]@{result = $result;'body'=$zbody}
 # SgIBATAuMBoxGDAWBgNVBAMMD1R1ZG9yIFMgUG9wZXNjdQIQZXsLzuTF+b1PPg61
 # Cp25RzAJBgUrDgMCGgUAoHgwGAYKKwYBBAGCNwIBDDEKMAigAoAAoQKAADAZBgkq
 # hkiG9w0BCQMxDAYKKwYBBAGCNwIBBDAcBgorBgEEAYI3AgELMQ4wDAYKKwYBBAGC
-# NwIBFTAjBgkqhkiG9w0BCQQxFgQU/r+M48vPlEXUfA0hjGBrfWUapyAwDQYJKoZI
-# hvcNAQEBBQAEgYCvOpcmixVlLOeZ1EAM4g6A5y/JfdrYYUQj1r8wFrFDTLHIb1iA
-# 0iRB0xbgZpow3udzURW6mevpGmzob1WEliq5vk19UGckevNefj9kKwXHDNDFXAKy
-# wHS0tZeQofIP1N4IU1LUctn1XENENtMmWuy3P/4Ru5qdVfQNjQjfuZcPOw==
+# NwIBFTAjBgkqhkiG9w0BCQQxFgQUtswBIwAbnAJr/4g8+riEm+g2MDcwDQYJKoZI
+# hvcNAQEBBQAEgYB5wWiOAy3L2/ryKgmWL2PRIaYtkHSto9YX9cmcj6nUqB9cwH0/
+# ndMrPABtkGBDVLnezEpcNjC8G5UkF8bQN9khl/3ww/7N0S6GrthNy33AWh5ER7VM
+# /uy3UvD1oWN4LgH/4iYngS8C5dDJ/I4UknE2s+zWX9a06Eyiw1E/XapQ0A==
 # SIG # End signature block
